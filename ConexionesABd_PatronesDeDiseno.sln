@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConexionesABd_PatronesDeDiseno", "ConexionesABd_PatronesDeDiseno\ConexionesABd_PatronesDeDiseno.csproj", "{74CB0D23-7C46-4019-96B6-9EF0C2951999}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{74CB0D23-7C46-4019-96B6-9EF0C2951999}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74CB0D23-7C46-4019-96B6-9EF0C2951999}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74CB0D23-7C46-4019-96B6-9EF0C2951999}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74CB0D23-7C46-4019-96B6-9EF0C2951999}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6B8A7C57-C43F-4C49-A77A-574EA1192CD4}
+	EndGlobalSection
+EndGlobal
