@@ -1,4 +1,5 @@
-﻿using ConexionesABd_PatronesDeDiseno.Clase_factory;
+﻿
+using ConexionesABd_PatronesDeDiseno.Factory;
 using ConexionesABd_PatronesDeDiseno.Proxy;
 using Microsoft.Data.SqlClient;
 using MySql.Data.MySqlClient;
@@ -16,6 +17,13 @@ namespace ConexionesABd_PatronesDeDiseno
 {
     public partial class Form1 : Form
     {
+        IMSConexionFactory dbFactoryMS;
+
+        bool enMS = false;
+
+        int conactivas = 0;
+        int llamadassr = 0;
+
         public Form1()
         {
             InitializeComponent();
@@ -40,26 +48,29 @@ namespace ConexionesABd_PatronesDeDiseno
 
         private void button1_Click_1(object sender, EventArgs e)
         {
+            llamadassr++;
+            CambiarTextoL();
+
             string connectionMsString = $"Server={textBox1.Text};Database={textBox2.Text};User ID={textBox3.Text};Password={textBox4.Text};";
-            
-            if (comboBox2.SelectedIndex == 0) //-- Solo valido que tipo de diseño eligio --// 
+
+            if (comboBox2.SelectedIndex == 0) //--  tipo de diseño Factory --// 
             {
 
-                
-                IDbMsFactory dbFactoryMS = new MySqlConexionFactory(connectionMsString); //-- creo una instancia de la interface de conexiones de MySQL mandandole como parametro la cadena de conexion --//
-
-                using (var connection = dbFactoryMS.CreateConnection()) //-- hago uso de la instancia antes hecha de la interface de IDbMsFactory , indicandole que creare una nueva conexion ds MySQL--//
+                if (dbFactoryMS == null || !enMS)
                 {
-                    try
-                    {
-                        connection.Open(); //-- abro la conexion mandando llamar el metodo de Open--//
+                    enMS = true;
+                    ConexionesBD conect = new ConexionesBD(); //--Instancia a la clase donde implementa la interfaz osea la clase fabrica--//
+                    dbFactoryMS = conect.getStrConexion("MS", connectionMsString); //-- creo una instancia de la interface de conexiones de MySQL mandandole como parametro la cadena de conexion --//
+                }
 
-                        MessageBox.Show("Conectado a MySql por FACTORY", "#PPCDSALVC");
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show($" {ex.Message}", "#PPCDSALVC");
-                    }
+                if (dbFactoryMS.ConexionEstaAbierta())
+                {
+                    dbFactoryMS.Disconnect();conactivas--; CambiarTextoL();
+                }
+                else
+                {
+                    MessageBox.Show($"Conectado a Mysql por FACTORY\n\nBase de datos: {textBox2.Text} con el usuario: {textBox3.Text}", "Info BD");
+                    dbFactoryMS.Connect(); conactivas++; CambiarTextoL();
                 }
 
             }
@@ -68,29 +79,35 @@ namespace ConexionesABd_PatronesDeDiseno
                 // Utilizando el proxy para acceder al servicio real
                 IDatabaseServiceProxyMS proxy = new DatabaseServiceProxyMS(connectionMsString);
                 proxy.ExecuteConect();
+                conactivas++; CambiarTextoL();
+                MessageBox.Show($"Conectado a MySql por PROXY\n\nBase de datos: {textBox2.Text} con el usuario: {textBox3.Text}", "Info BD");
             }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            string connectionSqlString = $"Data Source={textBox5.Text};Initial Catalog={textBox6.Text};User ID={textBox7.Text};Password={textBox8.Text};"; //--Creamos cadena de conexion--//
+            llamadassr++;
+            CambiarTextoL(); 
             
-            if (comboBox1.SelectedIndex == 0) //-- Solo valido que tipo de diseño eligio --// 
+            string connectionSqlString = $"Data Source={textBox5.Text};Initial Catalog={textBox6.Text};User ID={textBox7.Text};Password={textBox8.Text};"; //--Creamos cadena de conexion--//
+
+            if (comboBox1.SelectedIndex == 0) //--  tipo de diseño Factory --//
             {
-                IDbMsFactory dbFactorySql = new SqlConexionFactory(connectionSqlString); //-- creo una instancia de la interface de conexiones de SQL mandandole como parametro la cadena de conexion --//
-
-                using (var connection = dbFactorySql.CreateConnection()) //-- hago uso de la instancia antes hecha de la interface de IDbMsFactory, indicandole que creare una nueva conexion d SQL--//
+                if (dbFactoryMS == null || enMS)
                 {
-                    try
-                    {
-                        connection.Open(); //-- abro la conexion mandando llamar el metodo de Open--//
+                    enMS = false;
+                    ConexionesBD conect = new ConexionesBD(); //--Instancia a la clase donde implementa la interfaz osea la clase fabrica--//
+                    dbFactoryMS = conect.getStrConexion("S", connectionSqlString); //-- creo una instancia de la interface de conexiones de MySQL mandandole como parametro la cadena de conexion --//
+                }
 
-                        MessageBox.Show("Conectado a SQL server por FACTORY.", "#PPCDSALVC");
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show($"{ex.Message}", "#PPCDSALVC");
-                    }
+                if (dbFactoryMS.ConexionEstaAbierta())
+                {
+                    dbFactoryMS.Disconnect(); conactivas--; CambiarTextoL();
+                }
+                else
+                {
+                    MessageBox.Show($"Conectado a SQL Server por FACTORY\n\nBase de datos: {textBox6.Text} con el usuario: {textBox7.Text}", "Info BD");
+                    dbFactoryMS.Connect(); conactivas++; CambiarTextoL();
                 }
 
             }
@@ -99,7 +116,50 @@ namespace ConexionesABd_PatronesDeDiseno
                 // Utilizando el proxy para acceder al servicio real
                 IDatabaseServiceProxySQ proxy = new DatabaseServiceProxySQ(connectionSqlString);
                 proxy.ExecuteConect();
+                conactivas++; CambiarTextoL();
+                MessageBox.Show($"Conectado a Sql server por PROXY\n\nBase de datos: {textBox6.Text} con el usuario: {textBox7.Text}", "Info BD");
             }
+        }
+
+        private void CambiarTextoL()
+        {
+            label11.Text = $"Conexiones activas: {conactivas}";
+            label12.Text = $"Llamadas / Peticiones: {llamadassr}";
+        }
+
+        private void ConsumirPEstructural()
+        {
+            // Utilizar DataProvider directamente
+            IDataProvider dataProvider = new DataProvider();
+            MessageBox.Show(dataProvider.GetData(), "Interfaz principal");
+
+            // Utilizar DataProvider como IDataConsumer a través del adaptador
+            IDataConsumer dataConsumer = new DataProviderAdapter(dataProvider);
+            dataConsumer.ConsumeData();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            ConsumirPEstructural();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            ConsumirPComportamiento();
+        }
+        private void ConsumirPComportamiento()
+        {
+            // Crear un botón de Windows Forms (Invoker)
+            InvokerButton button = new InvokerButton();
+
+            // Crear un comando con una acción específica
+            ICommand command = new ConcreteCommand(() => MessageBox.Show("Clic desde el codigo."));
+
+            // Asociar el comando al botón
+            button.SetCommand(command);
+
+            // Simular un clic en el botón
+            button.Click();
         }
     }
 }

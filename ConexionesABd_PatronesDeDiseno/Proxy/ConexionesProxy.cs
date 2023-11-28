@@ -43,7 +43,7 @@ namespace ConexionesABd_PatronesDeDiseno.Proxy
                 using (SqlConnection connection = new SqlConnection(connectionString)) //-- Usa la conexion con la cadena heredada de la interfaz IDatabaseServiceProxy --//
                 {
                     connection.Open(); //-- Habre la conexxion con MySql --//
-                    MessageBox.Show("Conectado a Sql server por PROXY", "#PPCDSALVC");
+                    //MessageBox.Show("Conectado a Sql server por PROXY", "#PPCDSALVC");
                 }
             }
             catch (Exception ex)
@@ -96,7 +96,7 @@ namespace ConexionesABd_PatronesDeDiseno.Proxy
                 using (MySqlConnection connection = new MySqlConnection(connectionString)) //-- Usa la conexion con la cadena heredada de la interfaz IDatabaseServiceProxy --//
                 {
                     connection.Open(); //-- Habre la conexxion con MySql --//
-                    MessageBox.Show("Conectado a MySql por PROXY", "#PPCDSALVC");
+                    //MessageBox.Show("Conectado a MySql por PROXY", "#PPCDSALVC");
                 }
             }
             catch (Exception ex)
